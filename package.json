@@ -1,6 +1,6 @@
 {
   "name": "pinia-plugin-logger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Logger for Pinia",
   "author": "AGUMON <ljlm0402@gmail.com>",
   "license": "MIT",
@@ -19,7 +19,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist && microbundle --external all --name piniaPluginLogger",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "clean": "rm -rf ./dist"
   },
   "dependencies": {},
   "devDependencies": {

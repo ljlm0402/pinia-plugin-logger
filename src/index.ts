@@ -18,114 +18,84 @@ export type PiniaActionListenerContext = _StoreOnActionListenerContext<
 export interface PiniaLoggerOptions {
   /**
    * @default true
+   * @description Activate the logger
    */
-  logErrors?: boolean;
-  /**
-   * @default false
-   * @description Disable the logger
-   */
-  disabled?: boolean;
+  activate?: boolean;
+
   /**
    * @default true
    * @description Expand the console group
    */
   expanded?: boolean;
-  /**
-   * @default false
-   * @description Show the duration of the action in the console
-   * @example "action [store] actionName @ 12:00:00:000"
-   * @example "action [store] actionName failed after 100ms @ 12:00:00:000"
-   */
-  showDuration?: boolean;
-  /**
-   * @default true
-   * @description show the time of the action in the console
-   * @example "action [store] actionName @ 12:00:00:000"
-   */
-  showTime?: boolean;
+
   /**
    * @default true
    * @description Show the store name in the console
    */
-  showStoreName?: boolean;
+  store?: boolean;
+
   /**
    * @default true
-   * @description Show the pineapple Emoji in the console
+   * @description Show the time of the action in the console
    */
-  showPineapple?: boolean;
+  timestamp?: boolean;
+
   /**
-   * @default
-   * ```ts
-   * () => true
-   * ```
-   * @description Filter actions to log
-   * @example
-   * ```ts
-   * (action) => action.name !== "incrementCounter"
-   * ```
+   * @default true
+   * @description Show error the console
    */
-  filter?: (action: PiniaActionListenerContext) => boolean;
+  errors?: boolean;
+
   /**
-   * @default undefined
-   * @description List of actions to log
+   * @default []
    * @description If defined, only the actions in this list will be logged
    * @description If undefined, all actions will be logged
    */
-  actions?: KeyOfStoreActions<StoreGeneric>[];
+  include?: KeyOfStoreActions<StoreGeneric>[];
+
+  /**
+   * @default []
+   * @description If defined, the work of this list is excluded
+   * @description If undefined, all actions will be logged
+   */
+  exclude?: KeyOfStoreActions<StoreGeneric>[];
 }
 
 /**
- * @name getFormatTime
+ * @name getTimeStamp
  * @description get TimeStamp
  */
-const getFormatTime = () => {
+const getTimeStamp = () => {
   return dayjs().format("HH:mm:ss:SSS");
 };
 
-/**
- * @name piniaDefaultOptions
- */
 const piniaDefaultOptions: PiniaLoggerOptions = {
-  logErrors: true,
-  disabled: false,
+  activate: true,
   expanded: true,
-  showStoreName: true,
-  showDuration: false,
-  showTime: true,
-  showPineapple: true,
-  actions: undefined,
-  filter: () => true,
+  store: true,
+  timestamp: true,
+  errors: true,
+  include: [],
+  exclude: [],
 };
 
+/**
+ * @name DefineStoreOptionsBase
+ * @description Customize logger options for individual Pinia stores.
+ * @example
+ * defineStore(id, {
+ *   state: () => {},
+ *   getters: {},
+ *   actions: {},
+ *   logger: {
+ *     activate: true,
+ *     expanded: false
+ *   }
+ * })
+ */
 declare module "pinia" {
   export interface DefineStoreOptionsBase<S, Store> {
-    /**
-     * Customize logger options for individual Pinia stores.
-     *
-     * @example
-     * ```ts
-     * defineStore('id', {
-     *   actions: { getApi() {}},
-     *   logger: false
-     * })
-     * ```
-     * @example
-     *
-     * ```ts
-     * defineStore('id', {
-     *   actions: { getApi() {}},
-     *   logger: {
-     *     disabled: true,
-     *     expanded: false
-     *   }
-     * })
-     * ```
-     */
-    logger?:
-      | boolean
-      | (PiniaLoggerOptions & {
-          actions?: KeyOfStoreActions<Store>[];
-        });
+    logger?: boolean | PiniaLoggerOptions;
   }
 }
 
@@ -137,31 +107,24 @@ export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
       ...(typeof ctx.options.logger === "object" ? ctx.options.logger : {}),
     };
 
-    if (options.disabled || ctx.options.logger === false) return;
+    if (!options.activate || ctx.options.logger === false) return;
+    if (!Array.isArray(options.include) || !Array.isArray(options.exclude))
+      return;
 
     ctx.store.$onAction((action: PiniaActionListenerContext) => {
-      if (
-        Array.isArray(options.actions) &&
-        !(options.actions as string[])?.includes(action.name)
-      )
-        return;
+      if (!(options.include as string[]).includes(action.name)) return;
+      if ((options.exclude as string[]).includes(action.name)) return;
 
-      const startTime = Date.now();
       const prevState = { ...ctx.store.$state };
-
       const log = (isError?: boolean, error?: unknown) => {
-        const endTime = Date.now();
-        const duration = endTime - startTime + "ms";
         const nextState = { ...ctx.store.$state };
-        const storeName = action.store.$id;
-        
-        const title = `action ${options.showPineapple ? `🍍 ` : ""}${
-          options.showStoreName ? `[${storeName}] ` : ""
-        }${action.name} ${
-          isError
-            ? `failed ${options.showDuration ? `after ${duration} ` : ""}`
-            : ""
-        }${options.showTime ? `@ ${getFormatTime()}` : ""}`;
+        const store = action.store.$id;
+
+        const title = `action 🍍
+        ${options.store ? `[${store}] ` : ""}
+        ${action.name}
+        ${isError ? "failed" : ""}
+        ${options.timestamp ? `@ ${getTimeStamp()}` : ""}`;
 
         console[options.expanded ? "group" : "groupCollapsed"](
           `%c${title}`,
@@ -175,8 +138,7 @@ export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
         console.log("%caction", "font-weight: bold; color: #69B7FF;", {
           type: action.name,
           args: action.args.length > 0 ? { ...action.args } : undefined,
-          ...(options.showStoreName && { store: action.store.$id }),
-          ...(options.showDuration && { duration }),
+          ...(options.store && { store: action.store.$id }),
           ...(isError && { error }),
         });
         console.log(
@@ -188,11 +150,10 @@ export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
       };
 
       action.after(() => {
-        const canLog = (options.filter && options.filter(action)) ?? false;
-        if (canLog) log();
+        log();
       });
 
-      if (options.logErrors) {
+      if (options.errors) {
         action.onError((error) => {
           log(true, error);
         });
