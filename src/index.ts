@@ -128,10 +128,10 @@ export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
         const store = action.store.$id;
 
         const title = "action 🍍"
-        + `${options.store ? `[${store}] ` : ""}`
+        + `${options.store ? ` [${store}] ` : " "}`
         + `${action.name}`
-        + `${isError ? "failed" : ""}`
-        + `${options.timestamp ? `@ ${getTimeStamp()}` : ""}`;
+        + `${isError ? " Failed " : " "}`
+        + `${options.timestamp ? `@${getTimeStamp()}` : ""}`;
 
         console[options.expanded ? "group" : "groupCollapsed"](
           `%c${title}`,
