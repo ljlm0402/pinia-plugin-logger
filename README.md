@@ -1,4 +1,4 @@
-[Pinia](https://pinia.vuejs.org/) Actions Logger Plugin
+🍍 Logger Plugin for [Pinia](https://pinia.vuejs.org/)
 
 <p align="center">
     <a href="http://npm.im/pinia-plugin-logger" target="_blank">
@@ -49,14 +49,14 @@ export default pinia;
 
 ## 📬 Recommended Commit Message
 
-| When               | Commit Message              |
-| :----------------- | :-------------------------- |
-| Add function       | feat: ⚡️ Add function      |
-| Fix bug            | fix: 🐞 Fix bug             |
-| Refactoring        | refactor: 🛠 Refactoring     |
-| Add package        | package: 📦 Add package     |
-| Fix readme         | docs: 📚 Fix readme         |
-| Improvements style | style: 👁 Improvements style |
+| When             | Commit Message     |
+| :--------------- | :----------------- |
+| Add Feature      | ✨ Add Feature     |
+| Fix Bug          | 🐞 Fix Bug         |
+| Refactoring Code | 🛠 Refactoring Code |
+| Install Package  | 📦 Install Package |
+| Fix Readme       | 📚 Fix Readme      |
+| Update Version   | 🌼 Update Version  |
 
 ## 💳 License
 
