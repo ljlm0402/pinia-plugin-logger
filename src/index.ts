@@ -88,8 +88,7 @@ const piniaDefaultOptions: PiniaLoggerOptions = {
  *   getters: {},
  *   actions: {},
  *   logger: {
- *     activate: true,
- *     expanded: false
+ *     store: false
  *   }
  * })
  */
@@ -107,24 +106,32 @@ export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
       ...(typeof ctx.options.logger === "object" ? ctx.options.logger : {}),
     };
 
-    if (!options.activate || ctx.options.logger === false) return;
+    if (options.activate === false || ctx.options.logger === false) return;
     if (!Array.isArray(options.include) || !Array.isArray(options.exclude))
       return;
 
     ctx.store.$onAction((action: PiniaActionListenerContext) => {
-      if (!(options.include as string[]).includes(action.name)) return;
-      if ((options.exclude as string[]).includes(action.name)) return;
+      if (
+        options.include.length > 0 &&
+        !(options.include as string[]).includes(action.name)
+      )
+        return;
+      if (
+        options.exclude.length > 0 &&
+        (options.exclude as string[]).includes(action.name)
+      )
+        return;
 
       const prevState = { ...ctx.store.$state };
-      const log = (isError?: boolean, error?: unknown) => {
+      const logger = (isError?: boolean, error?: unknown) => {
         const nextState = { ...ctx.store.$state };
         const store = action.store.$id;
 
-        const title = `action 🍍
-        ${options.store ? `[${store}] ` : ""}
-        ${action.name}
-        ${isError ? "failed" : ""}
-        ${options.timestamp ? `@ ${getTimeStamp()}` : ""}`;
+        const title = "action 🍍"
+        + `${options.store ? `[${store}] ` : ""}`
+        + `${action.name}`
+        + `${isError ? "failed" : ""}`
+        + `${options.timestamp ? `@ ${getTimeStamp()}` : ""}`;
 
         console[options.expanded ? "group" : "groupCollapsed"](
           `%c${title}`,
@@ -150,12 +157,12 @@ export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
       };
 
       action.after(() => {
-        log();
+        logger();
       });
 
       if (options.errors) {
         action.onError((error) => {
-          log(true, error);
+          logger(true, error);
         });
       }
     });
