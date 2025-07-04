@@ -1,6 +1,6 @@
 {
   "name": "pinia-plugin-logger",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Logger for Pinia",
   "author": "AGUMON <ljlm0402@gmail.com>",
   "license": "MIT",
@@ -16,14 +16,28 @@
   "main": "dist/pinia-plugin-logger.js",
   "module": "dist/pinia-plugin-logger.es.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/pinia-plugin-logger.es.js",
+      "require": "./dist/pinia-plugin-logger.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ljlm0402/pinia-plugin-logger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ljlm0402/pinia-plugin-logger/issues"
+  },
+  "homepage": "https://github.com/ljlm0402/pinia-plugin-logger#readme",
   "scripts": {
     "build": "rimraf dist && microbundle --external all --name piniaPluginLogger",
     "prepare": "npm run build",
-    "clean": "rm -rf ./dist"
+    "clean": "rimraf ./dist"
   },
-  "dependencies": {
-    "dayjs": "^1.11.13"
-  },
+  "dependencies": {},
   "devDependencies": {
     "bundlesize": "^0.18.2",
     "husky": "^9.1.7",
@@ -48,5 +62,8 @@
     "hooks": {
       "pre-commit": "pretty-quick --staged"
     }
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

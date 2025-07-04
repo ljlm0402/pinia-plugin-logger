@@ -5,165 +5,160 @@ import type {
   _ActionsTree,
   _StoreOnActionListenerContext,
 } from "pinia";
-import dayjs from "dayjs";
 
-export type KeyOfStoreActions<Store> = keyof StoreActions<Store>;
-
-export type PiniaActionListenerContext = _StoreOnActionListenerContext<
+type KeyOfStoreActions<Store> = keyof StoreActions<Store>;
+type PiniaActionListenerContext = _StoreOnActionListenerContext<
   StoreGeneric,
   string,
   _ActionsTree
 >;
 
+interface Logger {
+  log(message: string, style?: string, payload?: unknown): void;
+  group(message: string, style?: string, payload?: unknown): void;
+  groupCollapsed(message: string, style?: string, payload?: unknown): void;
+  groupEnd(): void;
+}
+
 export interface PiniaLoggerOptions {
   /**
    * @default true
-   * @description Activate the logger
    */
-  activate?: boolean;
-
+  enabled?: boolean;
   /**
    * @default true
-   * @description Expand the console group
    */
   expanded?: boolean;
-
   /**
    * @default true
-   * @description Show the store name in the console
    */
-  store?: boolean;
-
+  showStoreName?: boolean;
   /**
    * @default true
-   * @description Show the time of the action in the console
    */
-  timestamp?: boolean;
-
+  showTimestamp?: boolean;
   /**
    * @default true
-   * @description Show error the console
    */
-  errors?: boolean;
-
+  showErrors?: boolean;
   /**
    * @default []
-   * @description If defined, only the actions in this list will be logged
-   * @description If undefined, all actions will be logged
+   * @description Only include these actions (if defined)
    */
-  include?: KeyOfStoreActions<StoreGeneric>[];
-
+  includeActions?: KeyOfStoreActions<StoreGeneric>[];
   /**
    * @default []
-   * @description If defined, the work of this list is excluded
-   * @description If undefined, all actions will be logged
+   * @description Exclude these actions (if defined)
    */
-  exclude?: KeyOfStoreActions<StoreGeneric>[];
+  excludeActions?: KeyOfStoreActions<StoreGeneric>[];
+  /**
+   * @default undefined
+   * @description Filter function for logging
+   */
+  filter?: (action: PiniaActionListenerContext) => boolean;
+  /**
+   * @default console
+   * @description Custom logger
+   */
+  logger?: Logger;
 }
 
-/**
- * @name getTimeStamp
- * @description get TimeStamp
- */
-const getTimeStamp = () => {
-  return dayjs().format("HH:mm:ss:SSS");
-};
-
-const piniaDefaultOptions: PiniaLoggerOptions = {
-  activate: true,
+const defaultOptions: PiniaLoggerOptions = {
+  enabled: true,
   expanded: true,
-  store: true,
-  timestamp: true,
-  errors: true,
-  include: [],
-  exclude: [],
+  showStoreName: true,
+  showTimestamp: true,
+  showErrors: true,
+  includeActions: [],
+  excludeActions: [],
+  filter: () => true,
+  logger: console,
 };
 
-/**
- * @name DefineStoreOptionsBase
- * @description Customize logger options for individual Pinia stores.
- * @example
- * defineStore(id, {
- *   state: () => {},
- *   getters: {},
- *   actions: {},
- *   logger: {
- *     store: false
- *   }
- * })
- */
+function getTimeStamp(date = new Date()) {
+  // dayjs 사용 안 함, 직접 포맷팅
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const ms = date.getMilliseconds().toString().padStart(3, "0");
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}:${ms}`;
+}
+
 declare module "pinia" {
   export interface DefineStoreOptionsBase<S, Store> {
     logger?: boolean | PiniaLoggerOptions;
   }
 }
 
-export default (config: PiniaLoggerOptions = piniaDefaultOptions) =>
+const PiniaLogger =
+  (config: PiniaLoggerOptions = defaultOptions) =>
   (ctx: PiniaPluginContext) => {
-    const options = {
-      ...piniaDefaultOptions,
+    // merge options: default < global < store
+    const options: PiniaLoggerOptions = {
+      ...defaultOptions,
       ...config,
       ...(typeof ctx.options.logger === "object" ? ctx.options.logger : {}),
     };
 
-    if (options.activate === false || ctx.options.logger === false) return;
-    if (!Array.isArray(options.include) || !Array.isArray(options.exclude))
-      return;
+    if (!options.enabled || ctx.options.logger === false) return;
+
+    const logger = options.logger || console;
 
     ctx.store.$onAction((action: PiniaActionListenerContext) => {
+      // Action filtering
       if (
-        options.include.length > 0 &&
-        !(options.include as string[]).includes(action.name)
+        Array.isArray(options.includeActions) &&
+        options.includeActions.length > 0 &&
+        !(options.includeActions as string[]).includes(action.name)
       )
         return;
       if (
-        options.exclude.length > 0 &&
-        (options.exclude as string[]).includes(action.name)
+        Array.isArray(options.excludeActions) &&
+        options.excludeActions.length > 0 &&
+        (options.excludeActions as string[]).includes(action.name)
       )
+        return;
+      if (typeof options.filter === "function" && !options.filter(action))
         return;
 
       const prevState = { ...ctx.store.$state };
-      const logger = (isError?: boolean, error?: unknown) => {
+      const time = options.showTimestamp ? ` @${getTimeStamp()}` : "";
+      const storeName = options.showStoreName ? ` [${action.store.$id}]` : "";
+      const title = `action 🍍${storeName} ${action.name}${time}`;
+
+      const logAction = (isError?: boolean, error?: unknown) => {
         const nextState = { ...ctx.store.$state };
-        const store = action.store.$id;
-
-        const title = "action 🍍"
-        + `${options.store ? ` [${store}] ` : " "}`
-        + `${action.name}`
-        + `${isError ? " Failed " : " "}`
-        + `${options.timestamp ? `@${getTimeStamp()}` : ""}`;
-
-        console[options.expanded ? "group" : "groupCollapsed"](
-          `%c${title}`,
+        logger[options.expanded ? "group" : "groupCollapsed"](
+          `%c${title}${isError ? " Failed" : ""}`,
           `font-weight: bold; ${isError ? "color: #ed4981;" : ""}`
         );
-        console.log(
+        logger.log(
           "%cprev state",
           "font-weight: bold; color: grey;",
           prevState
         );
-        console.log("%caction", "font-weight: bold; color: #69B7FF;", {
+        logger.log("%caction", "font-weight: bold; color: #69B7FF;", {
           type: action.name,
           args: action.args.length > 0 ? { ...action.args } : undefined,
-          ...(options.store && { store: action.store.$id }),
+          ...(options.showStoreName && { store: action.store.$id }),
           ...(isError && { error }),
         });
-        console.log(
+        logger.log(
           "%cnext state",
           "font-weight: bold; color: #4caf50;",
           nextState
         );
-        console.groupEnd();
+        logger.groupEnd();
       };
 
       action.after(() => {
-        logger();
+        logAction();
       });
 
-      if (options.errors) {
+      if (options.showErrors) {
         action.onError((error) => {
-          logger(true, error);
+          logAction(true, error);
         });
       }
     });
   };
+
+export default PiniaLogger;
