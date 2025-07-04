@@ -1,3 +1,40 @@
-.github/
+# 소스 및 개발 관련 파일/폴더 제외
+src/
+examples/
+test/
+tests/
+__tests__/
+coverage/
+.vscode/
+.idea/
 node_modules/
-dist/
+dist/*.map
+
+# 프로젝트 루트의 설정/메타 파일
+*.log
+*.tsbuildinfo
+*.env*
+*.DS_Store
+*.swp
+
+# 빌드/테스트/도구 관련
+*.spec.ts
+*.spec.js
+*.test.ts
+*.test.js
+jest.config.*
+vitest.config.*
+coverage/
+playground/
+scripts/
+temp/
+docs/
+assets/
+.github/
+.editorconfig
+
+# macOS, Windows, 기타 불필요 파일
+Thumbs.db
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml

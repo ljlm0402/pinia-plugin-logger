@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": ["ESNext", "DOM"],
+    "esModuleInterop": true,
+    "moduleDetection": "force",
+    "strict": true,
+    "jsx": "preserve",
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "pinia-plugin-logger": ["../../src"] // zenon을 직접 참조할 경우
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["src", "src/main.ts", "env.d.ts"]
+}
