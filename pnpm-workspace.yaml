@@ -1,0 +1,4 @@
+# pnpm-workspace.yaml (루트에 위치)
+packages:
+  - .                        # 루트 패키지 (zenon 라이브러리)
+  - examples/vue-app        # 예제 앱

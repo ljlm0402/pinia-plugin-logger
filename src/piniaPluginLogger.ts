@@ -88,7 +88,7 @@ declare module "pinia" {
   }
 }
 
-const PiniaLogger =
+const PiniaPluginLogger =
   (config: PiniaLoggerOptions = defaultOptions) =>
   (ctx: PiniaPluginContext) => {
     // merge options: default < global < store
@@ -161,4 +161,4 @@ const PiniaLogger =
     });
   };
 
-export default PiniaLogger;
+export default PiniaPluginLogger;
