@@ -1,11 +1,24 @@
-🍍 Logger Plugin for [Pinia](https://pinia.vuejs.org/)
+<h1 align="center">
+  <br>
+  <img src="https://github.com/ljlm0402/pinia-plugin-logger/raw/images/logo.png" alt="Project Logo" width="600" />
+  <br>
+  <br>
+  pinia-plugin-logger
+  <br>
+</h1>
+
+<h4 align="center">🍍 Logger Plugin for Pinia</h4>
+
+<p align ="center">
+    <a href="https://nodei.co/npm/pinia-plugin-logger" target="_blank">
+    <img src="https://nodei.co/npm/pinia-plugin-logger.png" alt="npm Info" />
+</a>
+
+</p>
 
 <p align="center">
     <a href="http://npm.im/pinia-plugin-logger" target="_blank">
       <img src="https://img.shields.io/npm/v/pinia-plugin-logger.svg" alt="npm Version" />
-    </a>
-    <a href="http://npm.im/pinia-plugin-logger" target="_blank">
-      <img src="https://img.shields.io/npm/l/pinia-plugin-logger.svg" alt="npm Package License" />
     </a>
     <a href="http://npm.im/pinia-plugin-logger" target="_blank">
       <img src="https://img.shields.io/github/v/release/ljlm0402/pinia-plugin-logger" alt="npm Release Version" />
@@ -13,9 +26,41 @@
     <a href="http://npm.im/pinia-plugin-logger" target="_blank">
       <img src="https://img.shields.io/npm/dm/pinia-plugin-logger.svg" alt="npm Downloads" />
     </a>
+    <a href="http://npm.im/pinia-plugin-logger" target="_blank">
+      <img src="https://img.shields.io/npm/l/pinia-plugin-logger.svg" alt="npm Package License" />
+    </a>
 </p>
 
-<br />
+<p align="center">
+  <a href="https://github.com/ljlm0402/pinia-plugin-logger/stargazers" target="_blank">
+    <img src="https://img.shields.io/github/stars/ljlm0402/pinia-plugin-logger" alt="github Stars" />
+  </a>
+  <a href="https://github.com/ljlm0402/pinia-plugin-logger/network/members" target="_blank">
+    <img src="https://img.shields.io/github/forks/ljlm0402/pinia-plugin-logger" alt="github Forks" />
+  </a>
+  <a href="https://github.com/ljlm0402/pinia-plugin-logger/stargazers" target="_blank">
+    <img src="https://img.shields.io/github/contributors/ljlm0402/pinia-plugin-logger" alt="github Contributors" />
+  </a>
+  <a href="https://github.com/ljlm0402/pinia-plugin-logger/issues" target="_blank">
+    <img src="https://img.shields.io/github/issues/ljlm0402/pinia-plugin-logger" alt="github Issues" />
+  </a>
+</p>
+
+---
+
+## 🧩 Features
+
+- 🍍 Simple and flexible action logger for Pinia
+
+- 🚦 Includes/excludes/filter actions to log
+
+- 💡 Supports custom logger and log style
+
+- 🏷 Store name and timestamp in log title
+
+- 🛡 Error logging with clear visibility
+
+- 🗂 Store-level logger configuration possible
 
 ## 🧩 Features
 
