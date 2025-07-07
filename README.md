@@ -62,20 +62,6 @@
 
 - 🗂 Store-level logger configuration possible
 
-## 🧩 Features
-
-- 🍍 Simple and flexible action logger for Pinia
-
-- 🚦 Includes/excludes/filter actions to log
-
-- 💡 Supports custom logger and log style
-
-- 🏷 Store name and timestamp in log title
-
-- 🛡 Error logging with clear visibility
-
-- 🗂 Store-level logger configuration possible
-
 ## 🕹Guide
 
 ### Install
