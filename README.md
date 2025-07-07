@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="https://github.com/ljlm0402/pinia-plugin-logger/raw/images/logo.png" alt="Project Logo" width="800" />
+  <img src="https://github.com/ljlm0402/pinia-plugin-logger/raw/images/logo.png" alt="Project Logo" width="600" />
   <br>
   <br>
   pinia-plugin-logger
