@@ -64,9 +64,9 @@
 
 - ⏱️ **Action duration tracking** for performance monitoring
 
-- � **Deep clone support** for accurate nested object tracking
+- 🔍 **Deep clone support** for accurate nested object tracking
 
-- �🛡 **Error logging** with clear visibility
+- 🛡 **Error logging** with clear visibility
 
 - 🗂 **Store-level logger configuration** possible
 
